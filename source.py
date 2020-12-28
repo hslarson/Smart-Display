@@ -49,15 +49,15 @@ def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False)
 def showScreen(screen):
     global window 
 
+    #Clear previous output
+    window.clear()
+
     #Make one long string of all of the characters
     out = ""
     rows = len(screen)
     for row in range(rows):
         window.addstr(row, 0, ''.join(screen[row]))
 
-    #Clear previous output
-    window.clear()
-    
     #Display the string
     window.refresh()
 
