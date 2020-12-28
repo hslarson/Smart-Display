@@ -4,6 +4,7 @@ import random
 import requests
 import json 
 import datetime
+import curses
 
 #Layers two arrays on top of each other
 def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False):
@@ -46,17 +47,19 @@ def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False)
 
 #Prints the values of a char array as one string
 def showScreen(screen):
+    global window 
+
     #Make one long string of all of the characters
     out = ""
     rows = len(screen)
     for row in range(rows):
-        out += ''.join(screen[row]) + "\n"
+        window.addstr(row, 0, ''.join(screen[row]))
 
     #Clear previous output
-    os.system('cls' if os.name == 'nt' else 'clear')
+    window.clear()
     
     #Display the string
-    print(out, flush = True)
+    window.refresh()
 
 
 #Fills a section of the screen with random ascii characters
@@ -800,10 +803,12 @@ def getBackground(current = []):
         
         return current
 
+#Create the screen object
+window = curses.initscr()
 
 #Array size constants
-ROWS = 119
-COLUMNS = 132
+ROWS = 120
+COLUMNS = 135
 
 #Loop Constants
 time_height    = 25
@@ -832,7 +837,6 @@ while time.localtime().tm_hour < end:
 
         #Play the opening animation
         background_arr = getBackground()
-        screen = background_arr.copy()
 
         time_arr       = ['']
         weather_arr    = []
