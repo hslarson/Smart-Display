@@ -807,7 +807,7 @@ def getBackground(current = []):
 window = curses.initscr()
 
 #Array size constants
-ROWS = 120
+ROWS = 119
 COLUMNS = 135
 
 #Loop Constants
