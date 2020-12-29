@@ -735,7 +735,7 @@ def getNews(init = False):
     
     #Every 5 seconds, add a new story
     rotation_speed = 8 #seconds
-    if time.monotonic() < newsClock + rotation_speed:
+    if not init and time.monotonic() < newsClock + rotation_speed:
         return newsDisplayArray
     else:
         newsClock = time.monotonic()
@@ -796,7 +796,7 @@ def getBackground(current = []):
         """
         noise = []
         for row in range(ROWS):
-            noise.append( random.choices(symbols, k=COLUMNS))
+            noise.append( random.choices(symbols, k=COLUMNS) )
         
         return noise
 
