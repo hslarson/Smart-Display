@@ -4,7 +4,8 @@ import random
 import requests
 import json 
 import datetime
-import curses
+import pygame
+from   pygame.locals import *
 
 #Layers two arrays on top of each other
 def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False):
@@ -47,19 +48,20 @@ def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False)
 
 #Prints the values of a char array as one string
 def showScreen(screen):
-    global window 
-
-    #Clear previous output
-    window.clear()
+    global window
+    
+    #Blank the screen
+    window.fill(background_color)
 
     #Make one long string of all of the characters
     out = ""
     rows = len(screen)
     for row in range(rows):
-        window.addstr(row, 0, ''.join(screen[row]))
+        text = font.render(''.join(screen[row]), True, font_color)
+        window.blit(text, (0, row * font_size))
 
-    #Display the string
-    window.refresh()
+    #Refresh the screen
+    pygame.display.update()
 
 
 #Fills a section of the screen with random ascii characters
@@ -803,14 +805,12 @@ def getBackground(current = []):
         
         return current
 
-#Create the screen object
-window = curses.initscr()
 
 #Array size constants
 ROWS = 119
 COLUMNS = 135
 
-#Loop Constants
+#Size Constants
 time_height    = 25
 weather_height = 32
 news_height    = 30 
@@ -821,12 +821,25 @@ time_y_spacing    = 1 * y_spacing
 weather_y_spacing = 2 * y_spacing + time_height
 news_y_spacing    = 3 * y_spacing + (time_height + weather_height)
 
+#Time Constants
 clock_interval = 0.1
+end = 22 #10:00pm
+
+#Setting up Pygame
+pygame.init()
+window = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+pygame.mouse.set_visible(False)
+background_color = (0, 0, 0)
+
+#Setting up fonts
+pygame.font.init()
+font = pygame.font.Font("Cascadia.ttf", 12)
+font_size  = font.get_height()
+font_color = (255, 255, 255)
 
 
 
 #Main loop
-end = 22 #10:00pm
 startup = True
 while time.localtime().tm_hour < end:
     if startup:
@@ -837,6 +850,7 @@ while time.localtime().tm_hour < end:
 
         #Play the opening animation
         background_arr = getBackground()
+        screen = background_arr.copy()
 
         time_arr       = ['']
         weather_arr    = []
@@ -867,4 +881,16 @@ while time.localtime().tm_hour < end:
     else:
         showScreen(new_screen)
 
+    #Handle events (there shouldn't be any, but prevents crashes)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            end = time.localtime().tm_hour
+        elif event.type == pygame.KEYDOWN:
+            #If the escape key is pressed, then quit
+            if event.key == pygame.K_ESCAPE:
+                end = time.localtime().tm_hour
+    
+    #Wait
     time.sleep(clock_interval)
+
+pygame.quit()
