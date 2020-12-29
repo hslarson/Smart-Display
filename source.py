@@ -189,7 +189,7 @@ def transition(before, after, area, duration, effect, end_clr = True):
 #Searches shape.txt for a given shape
 def getShape(shapeName):
     #Open the file containing the shapes
-    shapeFile = open("shapes.txt", 'r')
+    shapeFile = open("/home/pi/Smart-Display/shapes.txt", 'r')
     if not shapeFile.readable():
         #print("Failed to Read the File!")
         return
@@ -840,7 +840,7 @@ background_color = (0, 0, 0)
 
 #Setting up fonts
 pygame.font.init()
-font = pygame.font.Font("Cascadia.ttf", 12)
+font = pygame.font.Font("/home/pi/Smart-Display/Cascadia.ttf", 12)
 font_size  = font.get_height()
 font_color = (255, 255, 255)
 
