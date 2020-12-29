@@ -86,7 +86,7 @@ def transition(before, after, area, duration, effect, end_clr = True):
     fade_randomness_factor       = 0.001
     dropdown_correction_factor   = 60
     dropdown_randomness_factor   = 50
-    refresh_r8_factor            = 0.075
+    refresh_r8_factor            = 0.1
 
     #Some Variables for the fade effect
     if effect == 'fade':
@@ -803,7 +803,7 @@ def getBackground(current = []):
     else:
         #Choose a few characters to randomize
         for row in range(ROWS):
-            bool_arr = random.choices([True, False], weights=(0.02, 0.98), k = COLUMNS)
+            bool_arr = random.choices([True, False], weights=(0.002, 0.998), k = COLUMNS)
             char_arr = random.choices(symbols, k = COLUMNS)
 
             for col in range(COLUMNS):
@@ -815,7 +815,7 @@ def getBackground(current = []):
 
 #Array size constants
 ROWS = 128
-COLUMNS = 140
+COLUMNS = 150
 
 #Size Constants
 time_height    = 25
@@ -829,7 +829,7 @@ weather_y_spacing = 2 * y_spacing + time_height
 news_y_spacing    = 3 * y_spacing + (time_height + weather_height)
 
 #Time Constants
-clock_interval = 0.1
+clock_interval = 0.25
 end = 22 #10:00pm
 
 #Setting up Pygame
@@ -875,10 +875,10 @@ while time.localtime().tm_hour < end:
     new_screen = layer(new_screen, weather_arr, (weather_y_spacing, 0), respect_spaces = True, center = True)
     new_screen = layer(new_screen, news_arr,    (news_y_spacing, 0),    respect_spaces = True, center = True)
 
-    #Do the initial fade-in animation
+    #Do the initial fade-in animation (Not used)
     if startup:
         startup = False
-        transition(background_arr, new_screen, (0, ROWS, 0, COLUMNS), 8, 'fade')
+        #transition(background_arr, new_screen, (0, ROWS, 0, COLUMNS), 8, 'fade')
     
     #Otherwise, draw the screen
     else:
