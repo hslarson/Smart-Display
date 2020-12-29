@@ -814,8 +814,8 @@ def getBackground(current = []):
 
 
 #Array size constants
-ROWS = 128
-COLUMNS = 154
+ROWS = 113
+COLUMNS = 135
 
 #Size Constants
 time_height    = 25
@@ -840,7 +840,7 @@ background_color = (0, 0, 0)
 
 #Setting up fonts
 pygame.font.init()
-font = pygame.font.Font("/home/pi/Smart-Display/Cascadia.ttf", 12)
+font = pygame.font.Font("/home/pi/Smart-Display/Cascadia.ttf", 14)
 font_size  = font.get_height()
 font_color = (255, 255, 255)
 
