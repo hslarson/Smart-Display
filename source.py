@@ -815,7 +815,7 @@ def getBackground(current = []):
 
 #Array size constants
 ROWS = 128
-COLUMNS = 153
+COLUMNS = 154
 
 #Size Constants
 time_height    = 25
