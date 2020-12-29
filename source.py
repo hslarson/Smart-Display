@@ -49,7 +49,7 @@ def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False)
 #Prints the values of a char array as one string
 def showScreen(screen):
     global window
-    
+
     #Blank the screen
     window.fill(background_color)
 
@@ -779,6 +779,8 @@ def getNews(init = False):
 def getBackground(current = []):
     symbols = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','"','#','$','%','&','\'','(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\\',']','`','^','_','{','|','}','~']
     if len(current) == 0:
+        #Because raspi is scuffed
+        """
         #Initialize the screen
         screen = []
         for r in range(ROWS):
@@ -791,6 +793,11 @@ def getBackground(current = []):
         #Maintain the splash screen for a bit then transition to random
         time.sleep(1)
         noise = transition(splash, splash, (0, ROWS, 0, COLUMNS), 8, "cascade", end_clr = False)
+        """
+        noise = []
+        for row in range(ROWS):
+            noise.append( random.choices(symbols, k=COLUMNS))
+        
         return noise
 
     else:
@@ -807,8 +814,8 @@ def getBackground(current = []):
 
 
 #Array size constants
-ROWS = 119
-COLUMNS = 135
+ROWS = 128
+COLUMNS = 140
 
 #Size Constants
 time_height    = 25
@@ -850,14 +857,10 @@ while time.localtime().tm_hour < end:
 
         #Play the opening animation
         background_arr = getBackground()
-        screen = background_arr.copy()
 
         time_arr       = ['']
         weather_arr    = []
         news_arr       = []
-
-    #Store the past value of the time array
-    old_time = time_arr.copy()
 
     #Generate all of the widgets
     background_arr = getBackground(background_arr)
