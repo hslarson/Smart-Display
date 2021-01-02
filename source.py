@@ -219,7 +219,7 @@ def getShape(shapeName):
     else:
         return shape
 
-"""
+
 #Takes an array and centers it
 def centerShape(shapeArr, outSize, floor = -1, padding = -1):
     #Initialize the output
@@ -244,7 +244,7 @@ def centerShape(shapeArr, outSize, floor = -1, padding = -1):
     #Apply the shape over the output array 
     #Let the layer function handle horizontal centering
     return layer(out, shapeArr, (start_y, 0), respect_spaces = True, center = True)
-"""
+
 
 #Shows the current time and date
 def getTime(init = False):
@@ -289,6 +289,7 @@ def getTime(init = False):
     for char in time_str:
         charName = "Time" + char
         temp_arr.append(getShape(charName))
+        #temp_arr.append(centerShape(getShape(charName), (numHeight, 0), padding = 2))
 
     #Format the time array
     time_arr = makeGrid( temp_arr, (1, len(temp_arr)), padding = (1, 2) )
@@ -468,14 +469,14 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
     #Draw outer border if necessary
     if border[0] != "None":
         #Top border + Corners
-        out[0] = [border_styles.get(border[0])[2]] + [border_styles.get(border[0])[1]]*(grid_width - 2) + [border_styles.get(border[0])[2]]
+        out[0]              = [border_styles.get(border[0])[2]] + [border_styles.get(border[0])[1]]*(grid_width - 2) + [border_styles.get(border[0])[2]]
         
         #Bottom Border + Corners
         out[grid_height -1] = [border_styles.get(border[0])[2]] + [border_styles.get(border[0])[1]]*(grid_width - 2) + [border_styles.get(border[0])[2]]
         
         for row in range(1, grid_height - 1):
             #Left Border
-            out[row][0] = border_styles.get(border[0])[0]
+            out[row][0]              = border_styles.get(border[0])[0]
 
             #Right Border
             out[row][grid_width - 1] = border_styles.get(border[0])[0]
@@ -507,31 +508,7 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
                 data[cell][row] = data[cell][row][:max_width - (2 * padding[1] if padding[1] > -1 else 0)]
 
         #Align the data within a cell-sized array then apply that array to the grid
-
-
-        #temp = centerShape(data[cell], (max_height, max_width), (len(data[cell]) + padding[0] if padding[0] > -1 else -1), (padding[1] if padding[1] > -1 else -1))
-        
-        
-        #Initialize the smaller array
-        temp = []
-        for row in range(max_height):
-            if padding[1] == -1:
-                temp.append([' '] * max_width)
-            else:
-                temp.append([' '] * (cell_width + (2 * padding[1])))
-
-        #Decide where to start drawing the shape
-        if padding[0] > -1:
-            start_pos = padding[0]
-        else:
-            start_pos = (max_height - cell_height) // 2 - 1
-
-        #Apply the shape over the smaller array
-        #Let the layer function handle horizontal centering
-        temp = layer(temp, data[cell], (start_pos, 0), respect_spaces = True, center = True)
-        
-
-        #Apply the centered cell over the output array
+        temp = centerShape(data[cell], (max_height, max_width), (len(data[cell]) + padding[0] if padding[0] > -1 else -1), (padding[1] if padding[1] > -1 else -1))
         out = layer(out, temp, (start_y, start_x))
 
     return out
@@ -588,13 +565,8 @@ def getWeather(init = False):
     
     complete_url = base_url + "lat=" + lat + "&lon=" + lon + "&units=imperial" + "&appid=" + api_key
 
-    #Call the API (and handle network errors)
-    try:
-        response = requests.get(complete_url)
-    except:
-        weatherClock = time.monotonic() - refresh_interval
-        return makeGrid([getShape("NetworkErr")], (1,1), (weather_height, 67), border=("thick", "None", "None"))
-    
+    #Call the API
+    response = requests.get(complete_url) 
     x = response.json()
     
     #Create the current conditions array
@@ -750,21 +722,17 @@ def getNews(init = False):
         newsClock = time.monotonic()
         newsDisplayArray = []
         newsRawArray     = []
-        newsMainFeed     = []
         
     #Build URL
     base_url = 'http://newsapi.org/v2/top-headlines?country=us&apiKey='
     api_key  = '30d91648fd064e44ba294343bcd5e68c'
     url  = base_url + api_key
 
-    #Refresh the feed once we've read all of the news (and handle network errors)
+    #Refresh the feed once we've read all of the news
     out_length = 8
-    if init or len(newsMainFeed) == 0:
-        try:
-            newsMainFeed = requests.get(url).json()["articles"]
-        except:
-            return makeGrid([getShape("NetworkErr")], (1, 1), (news_height, 80), border=("thick", "None", "None"))
-        
+    if init or len(newsMainFeed["articles"]) == 0:
+        newsMainFeed = requests.get(url).json()
+    
     #Every 5 seconds, add a new story
     rotation_speed = 8 #seconds
     if not init and time.monotonic() < newsClock + rotation_speed:
@@ -774,10 +742,10 @@ def getNews(init = False):
 
     #If the display hasn't been populated yet, populate it
     if len(newsRawArray) < out_length:
-        newsRawArray = [newsMainFeed.pop() for n in range(out_length)]
+        newsRawArray = [newsMainFeed["articles"].pop() for n in range(out_length)]
     #Otherwise, just add one story
     else:
-        newsRawArray.insert(0, newsMainFeed.pop())
+        newsRawArray.insert(0, newsMainFeed["articles"].pop())
         newsRawArray.pop()
 
     #Some Array constants
@@ -817,11 +785,9 @@ def getBackground(current = []):
         screen = []
         for r in range(ROWS):
             screen.append([' ']*COLUMNS)
-
         #Load the splash screen and transition from blank to splash
         splash = layer(screen, getShape("Splash1"), (45, 0), center = True)
         transition(screen, splash, (0, ROWS, 0, COLUMNS), 8, "cascade")
-
         #Maintain the splash screen for a bit then transition to random
         time.sleep(1)
         noise = transition(splash, splash, (0, ROWS, 0, COLUMNS), 8, "cascade", end_clr = False)

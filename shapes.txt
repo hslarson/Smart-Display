@@ -606,23 +606,3 @@ syymMmyyyymMMMdyyyyNMdyy/
      .dd-+y. :y:/my      
       -.         .-      
 WeatherSnow
-
-NetworkErr
-                                 +-    
-               ``....``        /mMy`   
-        `-+shmMMMMMMMMMNmhs+-:mMh.     
-     -odMMMMMMMMMMNNMMMMMMMMMMd-       
-  .sNMMMMMdy+:-`      `-:sMMm/ .ymo.   
--hMMMMNs:`             `sMN+  -mMMMMh- 
-sMMMy:     ./oydmNNNNmdNNo`     :yMMMs`
- .o.    :smMMMMMMMMMMMMs` /ds:    .o.  
-     `+mMMMMNhs+:-oNMy. `dMMMMm+`      
-     -mMMNs-    -hMd-     -sNMMm:      
-       /+     -yMm: .o/-     +/        
-           -yNMm/ `sMMMMNy-            
-          `NMNo  `/+oymMMMs            
-         +NMs`         -o.             
-       /mMy.    `:++:`                 
-      .dh-      -mMMd-                 
-                  //                   
-NetworkErr
