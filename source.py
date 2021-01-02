@@ -565,8 +565,12 @@ def getWeather(init = False):
     
     complete_url = base_url + "lat=" + lat + "&lon=" + lon + "&units=imperial" + "&appid=" + api_key
 
-    #Call the API
-    response = requests.get(complete_url) 
+    #Call the API (and handle network errors)
+    try:
+        response = requests.get(complete_url)
+    except:
+        return makeGrid([getShape(NetworkErr)], (1,1), (weather_height, 0), border=("thick", "None", "None"))
+    
     x = response.json()
     
     #Create the current conditions array
@@ -728,11 +732,14 @@ def getNews(init = False):
     api_key  = '30d91648fd064e44ba294343bcd5e68c'
     url  = base_url + api_key
 
-    #Refresh the feed once we've read all of the news
+    #Refresh the feed once we've read all of the news (and handle network errors)
     out_length = 8
     if init or len(newsMainFeed["articles"]) == 0:
-        newsMainFeed = requests.get(url).json()
-    
+        try:
+            newsMainFeed = requests.get(url).json()
+        except:
+            return makeGrid([getShape(NetworkErr)], (1, 1), (news_height, 0), border=("thick", "None", "None"))
+        
     #Every 5 seconds, add a new story
     rotation_speed = 8 #seconds
     if not init and time.monotonic() < newsClock + rotation_speed:

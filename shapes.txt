@@ -606,3 +606,33 @@ syymMmyyyymMMMdyyyyNMdyy/
      .dd-+y. :y:/my      
       -.         .-      
 WeatherSnow
+
+NetworkErr
+                                                     `oNo`     
+                                                    +mMMN+     
+                     .-:/+osyyyyyyyso+/:-.        /dMMMy.      
+               .:+sdmNNMMMMMMMMMMMMMMMMMNNmds+:.-hMMMh-        
+           ./sdNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNNMMd:          
+        -+dNMMMMMMMMMMMMMNNmdddddddmNNMMMMMMMMMMMm/`  `        
+     .+dNMMMMMMMMMNdhs+:-..`````````..-:+sdMMMMNo`  .smd+.     
+   -yNMMMMMMMMNho:.`                     /mMMNs.  `+mMMMMms-   
+ :hNMMMMMMMmy:.                        :hMMMy-    +mMMMMMMMNh: 
+/NMMMMMMNy:`          .-:/osyyhhhyyso/yNMMh:       `:yNMMMMMMN/
+ -hMMMmo.        `-+ydmNMMMMMMMMMMMMMMMMd/`  `        .omMMMh- 
+   :ho.       `:ymNMMMMMMMMMMMMMMMMMMMm+`  .sds:`       .+h/`  
+            -smMMMMMMMMMMMNmmdddMMMMNs.  `omMMMMms-            
+          :hNMMMMMMMNmho/-..``:dMMNy-   .yNMMMMMMMNh:`         
+         /NMMMMMMNdo-`      -yNMMh:      `-odNMMMMMMN/         
+          -hNMMmo-        .sNMMd/            -omMMMh-          
+            :h+`        `omMMm+`  .+:.`        `+h:            
+                     .+hmMMNo`  `omMMMmh+.                     
+                  `:hNMMMNs.  `/mMMMMMMMMNh/`                  
+                  /MMMMMh-   .sdmmNNMMMMMMMN+                  
+                 .sMMMd:          `-/ymMMMh-                   
+               `oNMMm/                `/h:                     
+             `+mMMNo`                                          
+            /mMMNs`        `:syhys:`                           
+           /NMMy.          +NMMMMMN+                           
+            .s-             .yMMMy.                            
+                              -y-                              
+NetworkErr
