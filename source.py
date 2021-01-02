@@ -591,7 +591,7 @@ def getWeather(init = False):
     try:
         response = requests.get(complete_url)
     except:
-        timeClock = time.monotonic() - refresh_interval
+        weatherClock = time.monotonic() - refresh_interval
         return makeGrid([getShape("NetworkErr")], (1,1), (weather_height, 67), border=("thick", "None", "None"))
     
     x = response.json()
