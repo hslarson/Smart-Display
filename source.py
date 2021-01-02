@@ -219,7 +219,7 @@ def getShape(shapeName):
     else:
         return shape
 
-
+"""
 #Takes an array and centers it
 def centerShape(shapeArr, outSize, floor = -1, padding = -1):
     #Initialize the output
@@ -244,6 +244,7 @@ def centerShape(shapeArr, outSize, floor = -1, padding = -1):
     #Apply the shape over the output array 
     #Let the layer function handle horizontal centering
     return layer(out, shapeArr, (start_y, 0), respect_spaces = True, center = True)
+"""
 
 #Shows the current time and date
 def getTime(init = False):
@@ -508,30 +509,31 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
         #Align the data within a cell-sized array then apply that array to the grid
 
 
-        temp = centerShape(data[cell], (max_height, max_width), (len(data[cell]) + padding[0] if padding[0] > -1 else -1), (padding[1] if padding[1] > -1 else -1))
+        #temp = centerShape(data[cell], (max_height, max_width), (len(data[cell]) + padding[0] if padding[0] > -1 else -1), (padding[1] if padding[1] > -1 else -1))
         
-        """
+        
         #Initialize the smaller array
         temp = []
         for row in range(max_height):
             if padding[1] == -1:
                 temp.append([' '] * max_width)
             else:
-                temp.append([' '] * (cell_height + (2 * padding[1])))
+                temp.append([' '] * (cell_width + (2 * padding[1])))
 
         #Decide where to start drawing the shape
         if padding[0] > -1:
             start_pos = padding[0]
         else:
-            start_pos = (max_height - cell_height) // 2
+            start_pos = (max_height - cell_height) // 2 - 1
 
         #Apply the shape over the smaller array
         #Let the layer function handle horizontal centering
         temp = layer(temp, data[cell], (start_pos, 0), respect_spaces = True, center = True)
         
+
         #Apply the centered cell over the output array
         out = layer(out, temp, (start_y, start_x))
-        """
+
     return out
 
 
@@ -748,7 +750,7 @@ def getNews(init = False):
         newsClock = time.monotonic()
         newsDisplayArray = []
         newsRawArray     = []
-        newsMainFeed     = False
+        newsMainFeed     = []
         
     #Build URL
     base_url = 'http://newsapi.org/v2/top-headlines?country=us&apiKey='
@@ -757,9 +759,9 @@ def getNews(init = False):
 
     #Refresh the feed once we've read all of the news (and handle network errors)
     out_length = 8
-    if init or type(mainNewsFeed) == bool or len(newsMainFeed["articles"]) == 0:
+    if init or len(newsMainFeed) == 0:
         try:
-            newsMainFeed = requests.get(url).json()
+            newsMainFeed = requests.get(url).json()["articles"]
         except:
             return makeGrid([getShape("NetworkErr")], (1, 1), (news_height, 80), border=("thick", "None", "None"))
         
@@ -772,10 +774,10 @@ def getNews(init = False):
 
     #If the display hasn't been populated yet, populate it
     if len(newsRawArray) < out_length:
-        newsRawArray = [newsMainFeed["articles"].pop() for n in range(out_length)]
+        newsRawArray = [newsMainFeed.pop() for n in range(out_length)]
     #Otherwise, just add one story
     else:
-        newsRawArray.insert(0, newsMainFeed["articles"].pop())
+        newsRawArray.insert(0, newsMainFeed.pop())
         newsRawArray.pop()
 
     #Some Array constants
