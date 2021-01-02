@@ -528,7 +528,7 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
 
         #Apply the shape over the smaller array
         #Let the layer function handle horizontal centering
-        temp = layer(temp, shapeArr, (start_pos, 0), respect_spaces = True, center = True)
+        temp = layer(temp, data[cell], (start_pos, 0), respect_spaces = True, center = True)
         
         #Apply the centered cell over the output array
         out = layer(out, temp, (start_y, start_x))
