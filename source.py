@@ -748,6 +748,7 @@ def getNews(init = False):
         newsClock = time.monotonic()
         newsDisplayArray = []
         newsRawArray     = []
+        newsMainFeed     = False
         
     #Build URL
     base_url = 'http://newsapi.org/v2/top-headlines?country=us&apiKey='
@@ -756,7 +757,7 @@ def getNews(init = False):
 
     #Refresh the feed once we've read all of the news (and handle network errors)
     out_length = 8
-    if init or len(newsMainFeed["articles"]) == 0:
+    if init or type(mainNewsFeed) == bool or len(newsMainFeed["articles"]) == 0:
         try:
             newsMainFeed = requests.get(url).json()
         except:
