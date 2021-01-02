@@ -219,7 +219,7 @@ def getShape(shapeName):
     else:
         return shape
 
-"""
+
 #Takes an array and centers it
 def centerShape(shapeArr, outSize, floor = -1, padding = -1):
     #Initialize the output
@@ -244,7 +244,6 @@ def centerShape(shapeArr, outSize, floor = -1, padding = -1):
     #Apply the shape over the output array 
     #Let the layer function handle horizontal centering
     return layer(out, shapeArr, (start_y, 0), respect_spaces = True, center = True)
-"""
 
 #Shows the current time and date
 def getTime(init = False):
@@ -509,9 +508,9 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
         #Align the data within a cell-sized array then apply that array to the grid
 
 
-        #temp = centerShape(data[cell], (max_height, max_width), (len(data[cell]) + padding[0] if padding[0] > -1 else -1), (padding[1] if padding[1] > -1 else -1))
+        temp = centerShape(data[cell], (max_height, max_width), (len(data[cell]) + padding[0] if padding[0] > -1 else -1), (padding[1] if padding[1] > -1 else -1))
         
-
+        """
         #Initialize the smaller array
         temp = []
         for row in range(max_height):
@@ -532,7 +531,7 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
         
         #Apply the centered cell over the output array
         out = layer(out, temp, (start_y, start_x))
-
+        """
     return out
 
 
