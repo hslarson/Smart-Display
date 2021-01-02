@@ -219,7 +219,7 @@ def getShape(shapeName):
     else:
         return shape
 
-
+"""
 #Takes an array and centers it
 def centerShape(shapeArr, outSize, floor = -1, padding = -1):
     #Initialize the output
@@ -244,7 +244,7 @@ def centerShape(shapeArr, outSize, floor = -1, padding = -1):
     #Apply the shape over the output array 
     #Let the layer function handle horizontal centering
     return layer(out, shapeArr, (start_y, 0), respect_spaces = True, center = True)
-
+"""
 
 #Shows the current time and date
 def getTime(init = False):
@@ -289,7 +289,6 @@ def getTime(init = False):
     for char in time_str:
         charName = "Time" + char
         temp_arr.append(getShape(charName))
-        #temp_arr.append(centerShape(getShape(charName), (numHeight, 0), padding = 2))
 
     #Format the time array
     time_arr = makeGrid( temp_arr, (1, len(temp_arr)), padding = (1, 2) )
@@ -469,14 +468,14 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
     #Draw outer border if necessary
     if border[0] != "None":
         #Top border + Corners
-        out[0]              = [border_styles.get(border[0])[2]] + [border_styles.get(border[0])[1]]*(grid_width - 2) + [border_styles.get(border[0])[2]]
+        out[0] = [border_styles.get(border[0])[2]] + [border_styles.get(border[0])[1]]*(grid_width - 2) + [border_styles.get(border[0])[2]]
         
         #Bottom Border + Corners
         out[grid_height -1] = [border_styles.get(border[0])[2]] + [border_styles.get(border[0])[1]]*(grid_width - 2) + [border_styles.get(border[0])[2]]
         
         for row in range(1, grid_height - 1):
             #Left Border
-            out[row][0]              = border_styles.get(border[0])[0]
+            out[row][0] = border_styles.get(border[0])[0]
 
             #Right Border
             out[row][grid_width - 1] = border_styles.get(border[0])[0]
@@ -508,7 +507,30 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
                 data[cell][row] = data[cell][row][:max_width - (2 * padding[1] if padding[1] > -1 else 0)]
 
         #Align the data within a cell-sized array then apply that array to the grid
-        temp = centerShape(data[cell], (max_height, max_width), (len(data[cell]) + padding[0] if padding[0] > -1 else -1), (padding[1] if padding[1] > -1 else -1))
+
+
+        #temp = centerShape(data[cell], (max_height, max_width), (len(data[cell]) + padding[0] if padding[0] > -1 else -1), (padding[1] if padding[1] > -1 else -1))
+        
+
+        #Initialize the smaller array
+        temp = []
+        for row in range(max_height):
+            if padding[1] == -1:
+                temp.append([' '] * max_width)
+            else:
+                temp.append([' '] * (cell_height + (2 * padding[1])))
+
+        #Decide where to start drawing the shape
+        if padding[0] > -1:
+            start_pos = padding[0]
+        else:
+            start_pos = (max_height - cell_height) // 2
+
+        #Apply the shape over the smaller array
+        #Let the layer function handle horizontal centering
+        temp = layer(temp, shapeArr, (start_pos, 0), respect_spaces = True, center = True)
+        
+        #Apply the centered cell over the output array
         out = layer(out, temp, (start_y, start_x))
 
     return out
@@ -569,7 +591,8 @@ def getWeather(init = False):
     try:
         response = requests.get(complete_url)
     except:
-        return makeGrid([getShape(NetworkErr)], (1,1), (weather_height, 0), border=("thick", "None", "None"))
+        timeClock = time.monotonic() - refresh_interval
+        return makeGrid([getShape("NetworkErr")], (1,1), (weather_height, 67), border=("thick", "None", "None"))
     
     x = response.json()
     
@@ -738,7 +761,7 @@ def getNews(init = False):
         try:
             newsMainFeed = requests.get(url).json()
         except:
-            return makeGrid([getShape(NetworkErr)], (1, 1), (news_height, 0), border=("thick", "None", "None"))
+            return makeGrid([getShape("NetworkErr")], (1, 1), (news_height, 80), border=("thick", "None", "None"))
         
     #Every 5 seconds, add a new story
     rotation_speed = 8 #seconds
