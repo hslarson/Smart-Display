@@ -708,6 +708,7 @@ def getNews(init = False):
     global newsDisplayArray
     global newsMainFeed
     global newsRawArray
+    global numCalls
 
     #Wraps the text to fit a given length, adding dashes when necessary
     def textWrap(text, length):
@@ -730,6 +731,7 @@ def getNews(init = False):
         newsDisplayArray = []
         newsRawArray     = []
         newsMainFeed     = []
+        numCalls = 0
         
     #Build URL
     base_url = 'http://newsapi.org/v2/top-headlines?country=us&apiKey='
@@ -742,9 +744,12 @@ def getNews(init = False):
 
         #If the refresh cooldown is over, refresh the feed
         if init or time.monotonic() > newsRefreshClock + refresh_interval:
+            
             newsRefreshClock = time.monotonic() #Reset the clock
+            
             #Try to call the API (throws error w/o internet connection)
             try:
+                numCalls += 1
                 newsMainFeed = requests.get(url).json()["articles"]
             except:
                 pass
@@ -911,3 +916,4 @@ while time.localtime().tm_hour < end:
     time.sleep(clock_interval)
 
 pygame.quit()
+print( "NUMBER OF NEWS API CALLS: " + str(numCalls))
