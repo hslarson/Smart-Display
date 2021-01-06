@@ -565,8 +565,12 @@ def getWeather(init = False):
     
     complete_url = base_url + "lat=" + lat + "&lon=" + lon + "&units=imperial" + "&appid=" + api_key
 
-    #Call the API
-    response = requests.get(complete_url) 
+    #Call the API (Avoiding network errors)
+    try:
+        response = requests.get(complete_url) 
+    except:
+        return showOutput(weatherArray, weatherClock, swap_interval)
+    
     x = response.json()
     
     #Create the current conditions array
@@ -699,11 +703,13 @@ def getWeather(init = False):
 
 #Loads an RSS feed with important news
 def getNews(init = False):
+    global newsRefreshClock
     global newsClock
     global newsDisplayArray
     global newsMainFeed
     global newsRawArray
 
+    #Wraps the text to fit a given length, adding dashes when necessary
     def textWrap(text, length):
         out = []
         while len(text) > length:
@@ -719,6 +725,7 @@ def getNews(init = False):
 
     #Initialize clock
     if init:
+        newsRefreshClock = time.monotonic()
         newsClock = time.monotonic()
         newsDisplayArray = []
         newsRawArray     = []
@@ -729,32 +736,37 @@ def getNews(init = False):
     api_key  = '30d91648fd064e44ba294343bcd5e68c'
     url  = base_url + api_key
 
-    #Refresh the feed once we've read all of the news
-    out_length = 8
-    if init or len(newsMainFeed) == 0:
-        newsMainFeed = requests.get(url).json()["articles"]
-    
-    #Every 5 seconds, add a new story
+    refresh_interval = 600 #Call the API (at most) every x seconds
+    out_length = 8         #How many stories to render at once
+    if init or len(newsRawArray) < out_length:
+
+        #If the refresh cooldown is over, refresh the feed
+        if init or time.monotonic() > newsRefreshClock + refresh_interval:
+            newsRefreshClock = time.monotonic() #Reset the clock
+            #Try to call the API (throws error w/o internet connection)
+            try:
+                newsMainFeed = requests.get(url).json()["articles"]
+            except:
+                pass
+        
+        #Pass the new feed (Or possibly the old feed if the internet is out 
+        #or the cooldown period has not passed) to the raw news feed
+        newsRawArray = newsMainFeed.copy() + newsRawArray
+
+    #Every x seconds, re-render the raw array
     rotation_speed = 8 #seconds
     if not init and time.monotonic() < newsClock + rotation_speed:
         return newsDisplayArray
     else:
-        newsClock = time.monotonic()
-
-    #If the display hasn't been populated yet, populate it
-    if len(newsRawArray) < out_length:
-        newsRawArray = [newsMainFeed.pop() for n in range(out_length)]
-    #Otherwise, just add one story
-    else:
-        newsRawArray.insert(0, newsMainFeed.pop())
-        newsRawArray.pop()
+        newsClock = time.monotonic() #Refresh the clock
+        newsRawArray.pop()           #Remove the last story
 
     #Some Array constants
     out_array_dims = (30, 80)
 
-    #Draw the array
+    #Draw the last x stories in the array
     newsDisplayArray.clear()
-    for story in newsRawArray:
+    for story in newsRawArray[-1 * out_length:]:
         temp_arr = []
 
         #Add the Headline
@@ -771,11 +783,14 @@ def getNews(init = False):
         #Add the story to the output array
         newsDisplayArray.append( temp_arr )
 
+    #Make the main grid
     newsDisplayArray = makeGrid(newsDisplayArray, (out_length, 1), padding=(0,1), border=("None", "dots", "None"))
+    
+    #Trim and frame the grid
     newsDisplayArray = makeGrid([newsDisplayArray], (1, 1), (out_array_dims[0], 0), border=("thick", "None", "None"))
     return newsDisplayArray
 
-    
+
 #Creates the base layer with cutout for widgets and random noise as well
 def getBackground(current = []):
     symbols = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','"','#','$','%','&','\'','(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\\',']','`','^','_','{','|','}','~']
