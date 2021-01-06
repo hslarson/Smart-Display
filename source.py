@@ -738,7 +738,7 @@ def getNews(init = False):
 
     refresh_interval = 600 #Call the API (at most) every x seconds
     out_length = 8         #How many stories to render at once
-    if init or len(newsRawArray) < out_length:
+    if init or len(newsRawArray) <= out_length:
 
         #If the refresh cooldown is over, refresh the feed
         if init or time.monotonic() > newsRefreshClock + refresh_interval:
