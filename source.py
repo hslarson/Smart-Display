@@ -722,6 +722,7 @@ def getNews(init = False):
         newsClock = time.monotonic()
         newsDisplayArray = []
         newsRawArray     = []
+        newsMainFeed     = []
         
     #Build URL
     base_url = 'http://newsapi.org/v2/top-headlines?country=us&apiKey='
@@ -730,8 +731,8 @@ def getNews(init = False):
 
     #Refresh the feed once we've read all of the news
     out_length = 8
-    if init or len(newsMainFeed["articles"]) == 0:
-        newsMainFeed = requests.get(url).json()
+    if init or len(newsMainFeed) == 0:
+        newsMainFeed = requests.get(url).json()["articles"]
     
     #Every 5 seconds, add a new story
     rotation_speed = 8 #seconds
@@ -742,10 +743,10 @@ def getNews(init = False):
 
     #If the display hasn't been populated yet, populate it
     if len(newsRawArray) < out_length:
-        newsRawArray = [newsMainFeed["articles"].pop() for n in range(out_length)]
+        newsRawArray = [newsMainFeed.pop() for n in range(out_length)]
     #Otherwise, just add one story
     else:
-        newsRawArray.insert(0, newsMainFeed["articles"].pop())
+        newsRawArray.insert(0, newsMainFeed.pop())
         newsRawArray.pop()
 
     #Some Array constants
