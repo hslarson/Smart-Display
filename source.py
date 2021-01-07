@@ -714,13 +714,20 @@ def getNews(init = False):
     def textWrap(text, length):
         out = []
         while len(text) > length:
-            if text[length - 1] != " " and text[length] != " ":
-                out.append(text[:length - 1] + "-")
-                text = text[length - 1:]
+            #If the next character is not a space..
+            #Find the last space and append everything before that
+            if text[length] != " ":
+                temp = text[:length].rpartition(" ")
+                out.append(temp[0])
+                text = temp[2] + text[length:] #Add any remaining characters back to the main string
+            
+            #Otherwise, simply add everything before the space to the out array
+            #And leave everything after the space as is
             else:
                 out.append(text[:length])
-                text = text[length:]
-        
+                text = text[length + 1:]
+
+        #Add any of the leftovers to the out array
         out.append(text)
         return out
 
