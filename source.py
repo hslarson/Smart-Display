@@ -856,7 +856,7 @@ news_y_spacing    = 3 * y_spacing + (time_height + weather_height)
 
 #Time Constants
 clock_interval = 0.25
-end = 22 #10:00pm
+end = 23 #11:00pm
 
 #Setting up Pygame
 pygame.init()
