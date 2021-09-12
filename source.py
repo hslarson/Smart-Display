@@ -561,7 +561,7 @@ def getWeather(init = False):
     base_url = "http://api.openweathermap.org/data/2.5/onecall?"
     lat = "38.547131"
     lon = "-122.816383"
-    api_key = "2e0b9c709325e0e3adb12cbd1a2098b4"
+    api_key = weather_api_key
     
     complete_url = base_url + "lat=" + lat + "&lon=" + lon + "&units=imperial" + "&appid=" + api_key
 
@@ -742,7 +742,7 @@ def getNews(init = False):
         
     #Build URL
     base_url = 'http://newsapi.org/v2/top-headlines?country=us&apiKey='
-    api_key  = '30d91648fd064e44ba294343bcd5e68c'
+    api_key  = news_api_key
     url  = base_url + api_key
 
     refresh_interval = 600 #Call the API (at most) every x seconds
@@ -837,6 +837,17 @@ def getBackground(current = []):
                     current[row][col] = char_arr[col]
         
         return current
+
+
+# Load Secrets File
+file = open("secrets.json")
+if file.readable:
+    contents = json.load(file)
+    weather_api_key = contents["weather_api_key"]
+    news_api_key = contents["news_api_key"]
+    file.close()
+else:
+    raise Exception("Failed to Load Secrets File")
 
 
 #Array size constants
