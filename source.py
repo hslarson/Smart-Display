@@ -840,7 +840,7 @@ def getBackground(current = []):
 
 
 # Load Secrets File
-file = open("/Smart-Display/secrets.json")
+file = open("Smart-Display/secrets.json")
 if file.readable:
     contents = json.load(file)
     weather_api_key = contents["weather_api_key"]
