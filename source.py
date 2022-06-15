@@ -722,7 +722,6 @@ y_spacing = (ROWS - (time_height + weather_height + news_height)) // 4
 time_y_spacing    = 1 * y_spacing
 weather_y_spacing = 2 * y_spacing + time_height
 news_y_spacing    = 3 * y_spacing + (time_height + weather_height)
-news_y_spacing += 1
 
 #Time Constants
 clock_interval = 15
