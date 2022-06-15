@@ -160,20 +160,21 @@ def getTime(init = False):
 
     #Build the date
     #Add week day
-    date_arr = []
-    date_arr.append( getShape("Week" + str(current_time[2])) )
+    day_arr = [getShape("Week" + str(current_time[2]))]
 
     #Add Month
-    date_arr.append( getShape("Month" + str(current_time[0])) )
+    mon_arr = [getShape("Month" + str(current_time[0]))]
     
     #Add day of the month
     temp_arr = []
     for num in str(current_time[1]):
         temp_arr.append( getShape("Date" + str(num)) )
-    date_arr.append( makeGrid(temp_arr, (1, len(temp_arr))) )
+    mon_arr.append( makeGrid(temp_arr, (1, len(temp_arr))) )
 
     #Format the date array
-    date_arr = makeGrid(date_arr, (1, len(date_arr)), padding = (0, 1))
+    #Always show date, only show day of week if there is room
+    temp_arr = (day_arr if len(mon_arr[0]) + len(day_arr[0]) <= (ROWS-2*2+2) else []) + mon_arr
+    date_arr = makeGrid(temp_arr, (1, len(temp_arr)), padding = (0, 1))
     
     #Clear out the old value of the global time array
     timeArray = []
