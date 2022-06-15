@@ -4,8 +4,7 @@ import random
 import requests
 import json 
 import datetime
-import pygame
-from   pygame.locals import *
+
 
 #Layers two arrays on top of each other
 def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False):
@@ -48,146 +47,21 @@ def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False)
 
 #Prints the values of a char array as one string
 def showScreen(screen):
-    global window
-
-    #Blank the screen
-    window.fill(background_color)
 
     #Make one long string of all of the characters
     out = ""
     rows = len(screen)
+    
     for row in range(rows):
-        text = font.render(''.join(screen[row]), True, font_color)
-        window.blit(text, (0, row * font_size))
-
-    #Refresh the screen
-    pygame.display.update()
-
-
-#Fills a section of the screen with random ascii characters
-def transition(before, after, area, duration, effect, end_clr = True):
-    #Variables to make sure that the effect is well timed
-    start = time.monotonic()
-    mid   = start + (duration / 2)
-    end   = start + duration
-
-    #Output array
-    noise = []
-    for row in range(area[1] - area[0]):
-        noise.append([' ']*(area[3] - area[2]))
-
-    #All ascii symbols
-    symbols = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','"','#','$','%','&','\'','(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\\',']','`','^','_','{','|','}','~',' ']
-    filled = False 
-
-    #Arbitrary constants that make shit work right
-    fade_out_correction_factor   = duration / 20
-    fade_in_correction_factor    = duration / 20
-    fade_randomness_factor       = 0.001
-    dropdown_correction_factor   = 60
-    dropdown_randomness_factor   = 50
-    refresh_r8_factor            = 0.1
-
-    #Some Variables for the fade effect
-    if effect == 'fade':
-        shuffle = False
-        unfilled = (area[1] - area[0]) * (area[3] - area[2])
-
-        filled_coords = []
-        unfilled_coords = list(range(unfilled))
-        random.shuffle(unfilled_coords)
-
-    #Animation Loop
-    while(end - time.monotonic() > 0):
-
-        spaces = 0 #Decides when the first part of the animation ends
-
-        if effect == 'cascade':
-            #For every character in the array...
-            for row in range(len(noise)):
-                for col in range(len(noise[0])):
-                    #Part one
-                    if filled == False and ((row == 0 and noise[row][col] == ' ') or (noise[row][col] == ' ' and noise[row - 1][col] != ' ')):
-                        if random.randint(0, round(dropdown_correction_factor / duration)) != 0:
-                            noise[row][col] = random.choice(symbols[0:len(symbols)-1])
-                        spaces += 1
-                    
-                    #Part two
-                    elif filled == True and ((row == 0 and noise[row][col] != ' ') or (noise[row][col] != ' ' and noise[row - 1][col] == ' ')):
-                        if random.randint(0, round(dropdown_correction_factor / duration)) != 0:
-                            noise[row][col] = ' '
-
-                    #Changes already-written symbols
-                    elif noise[row][col] != ' ' and random.randint(0, dropdown_randomness_factor) == 0:
-                        noise[row][col] = random.choice(symbols[0:len(symbols)-1])
-
-        elif effect == 'fade':
-            #First part of the animation, fade in
-            if filled == False:
-                spaces = 1  #Make spaces nonzero so filled flag doesn't change
-
-                #The goal is the number of unfilled spaces in the matrix
-                #As time reaches 50% of the total animation time, the goal approaches zero
-                goal = (unfilled * 2 * ((mid - fade_in_correction_factor) - time.monotonic())) / duration
-
-                #Decode the coordinates then move them to the filled array
-                while len(unfilled_coords) >= goal and len(unfilled_coords) > 0:
-                    temp = unfilled_coords.pop()
-                    r_index = temp // (area[3] - area[2])
-                    c_index = temp %  (area[3] - area[2])
-
-                    noise[r_index][c_index] = random.choice(symbols[0:len(symbols)-1])
-                    filled_coords.append(temp)
-                
-                #If the first part is finished, update the filled flag
-                if goal <= 0:
-                    spaces = 0 
-
-            #Second part of the animation, fade out (skipped if end_clr is false)
-            elif filled == True:
-                #Shuffle the coordinates array before starting the an
-                if shuffle:
-                    random.shuffle(filled_coords)
-                    shuffle = False
-
-                #Same goal except we're concerned with the end time not the middle
-                goal = (unfilled * 2 * ((end - fade_out_correction_factor)- time.monotonic())) / duration
-                
-                #Decode the coordinates and fill them with spaces
-                while len(filled_coords) >= goal and len(filled_coords) > 0:
-                    temp = filled_coords.pop()
-                    noise[temp // (area[3] - area[2])][temp % (area[3] - area[2])] = ' '
-            
-            #Let the filled symbols change randomly (looks better)
-            rand_change  = random.choices([True, False], weights=(fade_randomness_factor, 1 - fade_randomness_factor), k = len(filled_coords))
-            rand_symbols = random.choices(symbols[0:len(symbols)-1], k = len(filled_coords))
-            for i, c in enumerate(filled_coords):
-                if rand_change[i]:
-                    noise[c // (area[3] - area[2])][c % (area[3] - area[2])] = rand_symbols[i]
-
-        #Wait a while then display the output
-        time.sleep(refresh_r8_factor)
-        if not filled:
-            showScreen(layer(before, noise, (area[0], area[2])))
-        else:
-            showScreen(layer(after,  noise, (area[0], area[2])))
-
-        #Change the state of the filled flag if necessary
-        if  filled == False and end_clr == True and spaces == 0:
-            filled = True
-            shuffle = True
-
-    #Get rid of any left-over symbols if necessary
-    if end_clr == True:
-        showScreen(after)
-
-    #return the after array + noise if end_clr is false
-    else:
-        return layer(after, noise, (area[0], area[2]))
+        out += "".join(screen[row])
+    
+    # Print to screen
+    os.system("echo \"" + out + "\"")
 
 
 #Searches shape.txt for a given shape
 def getShape(shapeName):
+    
     #Open the file containing the shapes
     shapeFile = open("/home/pi/Smart-Display/shapes.txt", 'r')
     if not shapeFile.readable():
@@ -248,21 +122,6 @@ def centerShape(shapeArr, outSize, floor = -1, padding = -1):
 
 #Shows the current time and date
 def getTime(init = False):
-    global timeClock  #Prevents the clock from updating every time the function is called
-    global timeArray  #Stores the last time array computed and returns it upon request
-
-    #Initializes the clock
-    if init:
-        timeClock = time.monotonic()   
-        return 
-
-    #Checking the clock on a preset interval
-    interval = 10 #seconds
-    if timeClock > time.monotonic():
-        return timeArray
-
-    #Reset the interval
-    timeClock = time.monotonic() + interval
 
     #Get the current time
     current_time = time.localtime()
@@ -289,7 +148,6 @@ def getTime(init = False):
     for char in time_str:
         charName = "Time" + char
         temp_arr.append(getShape(charName))
-        #temp_arr.append(centerShape(getShape(charName), (numHeight, 0), padding = 2))
 
     #Format the time array
     time_arr = makeGrid( temp_arr, (1, len(temp_arr)), padding = (1, 2) )
@@ -325,6 +183,7 @@ def getTime(init = False):
 
 
 def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("None", "None", "None")):
+    
     #data - An array of arrays representing the contents of each cell
     #grid_dims - The number of cells per dimension (rows, cols)
     #out_size - The actual size of the output array. By default, it takes up as much space as necessary
@@ -559,8 +418,8 @@ def getWeather(init = False):
 
     #Construct the URL
     base_url = "http://api.openweathermap.org/data/2.5/onecall?"
-    lat = "38.547131"
-    lon = "-122.816383"
+    lat = weather_latitude
+    lon = weather_longitude
     api_key = weather_api_key
     
     complete_url = base_url + "lat=" + lat + "&lon=" + lon + "&units=imperial" + "&appid=" + api_key
@@ -805,21 +664,9 @@ def getNews(init = False):
 
 #Creates the base layer with cutout for widgets and random noise as well
 def getBackground(current = []):
+    
     symbols = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','"','#','$','%','&','\'','(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\\',']','`','^','_','{','|','}','~']
     if len(current) == 0:
-        #Because raspi is scuffed
-        """
-        #Initialize the screen
-        screen = []
-        for r in range(ROWS):
-            screen.append([' ']*COLUMNS)
-        #Load the splash screen and transition from blank to splash
-        splash = layer(screen, getShape("Splash1"), (45, 0), center = True)
-        transition(screen, splash, (0, ROWS, 0, COLUMNS), 8, "cascade")
-        #Maintain the splash screen for a bit then transition to random
-        time.sleep(1)
-        noise = transition(splash, splash, (0, ROWS, 0, COLUMNS), 8, "cascade", end_clr = False)
-        """
         noise = []
         for row in range(ROWS):
             noise.append( random.choices(symbols, k=COLUMNS) )
@@ -839,25 +686,30 @@ def getBackground(current = []):
         return current
 
 
+
 # Load Secrets File
 file = open("/home/pi/Smart-Display/secrets.json")
 if file.readable:
     contents = json.load(file)
+    
+    weather_latitude = contents["weather_latitude"]
+    weather_longitude = contents["weather_longitude"]
     weather_api_key = contents["weather_api_key"]
     news_api_key = contents["news_api_key"]
+    
     file.close()
 else:
     raise Exception("Failed to Load Secrets File")
 
 
 #Array size constants
-ROWS = 108
-COLUMNS = 135
+ROWS = 86
+COLUMNS = 98
 
 #Size Constants
 time_height    = 25
 weather_height = 32
-news_height    = 30 
+news_height    = 30
 
 y_spacing = (ROWS - (time_height + weather_height + news_height)) // 4
 
@@ -868,19 +720,6 @@ news_y_spacing    = 3 * y_spacing + (time_height + weather_height)
 #Time Constants
 clock_interval = 0.25
 end = 23 #11:00pm
-
-#Setting up Pygame
-pygame.init()
-window = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
-pygame.mouse.set_visible(False)
-background_color = (0, 0, 0)
-
-#Setting up fonts
-pygame.font.init()
-font = pygame.font.Font("/home/pi/Smart-Display/Cascadia.ttf", 14)
-font_size  = font.get_height()
-font_color = (255, 255, 255)
-
 
 
 #Main loop
@@ -912,26 +751,11 @@ while time.localtime().tm_hour < end:
     new_screen = layer(new_screen, weather_arr, (weather_y_spacing, 0), respect_spaces = True, center = True)
     new_screen = layer(new_screen, news_arr,    (news_y_spacing, 0),    respect_spaces = True, center = True)
 
-    #Do the initial fade-in animation (Not used)
-    if startup:
-        startup = False
-        #transition(background_arr, new_screen, (0, ROWS, 0, COLUMNS), 8, 'fade')
-    
-    #Otherwise, draw the screen
-    else:
-        showScreen(new_screen)
-
-    #Handle events (there shouldn't be any, but prevents crashes)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            end = time.localtime().tm_hour
-        elif event.type == pygame.KEYDOWN:
-            #If the escape key is pressed, then quit
-            if event.key == pygame.K_ESCAPE:
-                end = time.localtime().tm_hour
+    # Draw Screen
+    showScreen(new_screen)
     
     #Wait
     time.sleep(clock_interval)
 
-pygame.quit()
+
 print( "NUMBER OF NEWS API CALLS: " + str(numCalls))
