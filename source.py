@@ -56,7 +56,8 @@ def showScreen(screen):
         out += "".join(screen[row])
     
     # Print to screen
-    os.system("echo \"" + out + "\"")
+    #os.system("echo \"" + out + "\"")
+    print(out)
 
 
 #Searches shape.txt for a given shape
@@ -718,12 +719,12 @@ weather_y_spacing = 2 * y_spacing + time_height
 news_y_spacing    = 3 * y_spacing + (time_height + weather_height)
 
 #Time Constants
-clock_interval = 0.25
+clock_interval = 10
 end = 23 #11:00pm
-
 
 #Main loop
 startup = True
+numCalls = 0
 while time.localtime().tm_hour < end:
     if startup:
         #Initialize Modules
