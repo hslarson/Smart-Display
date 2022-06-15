@@ -2,7 +2,7 @@ import time
 import os
 import random
 import requests
-import json 
+import json
 import datetime
 
 
@@ -41,7 +41,7 @@ def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False)
                     break
             else:
                 continue
-    
+
     return out
 
 
@@ -59,7 +59,7 @@ def showScreen(screen):
         if file.writable():
             file.write(out)
         file.close()
-    
+
     # Show File
     os.system("clear")
     os.system("cat screen.txt")
@@ -67,7 +67,7 @@ def showScreen(screen):
 
 #Searches shape.txt for a given shape
 def getShape(shapeName):
-    
+
     #Open the file containing the shapes
     shapeFile = open("/home/pi/Smart-Display/shapes.txt", 'r')
     if not shapeFile.readable():
@@ -88,7 +88,7 @@ def getShape(shapeName):
                 break
         if found:
             shape.append(line.replace('\n', ''))
-    
+
     #Close the file
     shapeFile.close()
 
@@ -121,7 +121,7 @@ def centerShape(shapeArr, outSize, floor = -1, padding = -1):
     else:
         start_y = (outSize[0] - shape_h) // 2
 
-    #Apply the shape over the output array 
+    #Apply the shape over the output array
     #Let the layer function handle horizontal centering
     return layer(out, shapeArr, (start_y, 0), respect_spaces = True, center = True)
 
@@ -164,7 +164,7 @@ def getTime(init = False):
 
     #Add Month
     mon_arr = [getShape("Month" + str(current_time[0]))]
-    
+
     #Add day of the month
     temp_arr = []
     for num in str(current_time[1]):
@@ -173,9 +173,9 @@ def getTime(init = False):
 
     #Format the date array
     #Always show date, only show day of week if there is room
-    temp_arr = (day_arr if len(mon_arr[0]) + len(day_arr[0]) <= (ROWS-2*2+2) else []) + mon_arr
+    temp_arr = (day_arr if len(mon_arr[0][0]) + len(day_arr[0][0]) <= (ROWS-8) else []) + mon_arr
     date_arr = makeGrid(temp_arr, (1, len(temp_arr)), padding = (0, 1))
-    
+
     #Clear out the old value of the global time array
     timeArray = []
     timeArray = [timeArray.append([]) for x in range(numHeight + dateHeight)]
@@ -190,7 +190,7 @@ def getTime(init = False):
 
 
 def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("None", "None", "None")):
-    
+
     #data - An array of arrays representing the contents of each cell
     #grid_dims - The number of cells per dimension (rows, cols)
     #out_size - The actual size of the output array. By default, it takes up as much space as necessary
@@ -249,7 +249,7 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
     #Count the number of vertical lines we need to draw (including borders)
     num_vert_gridlines = 0
     if border[2] != "None":
-        num_vert_gridlines += grid_dims[1] - 1 
+        num_vert_gridlines += grid_dims[1] - 1
     if border[0] != "None":
         num_vert_gridlines += 2
 
@@ -266,20 +266,20 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
                     sub_array.append(data[row * grid_dims[1] + col])
                 else:
                     break
-            
+
             #For every cell in the subarray, find the longest row in that cell
             #Then find the maximum out of those values
             longest = 0
             for cell in sub_array:
                 if padding[1] > 0 and len(max(cell, key=len)) + 2 * padding[1] > longest:
                     longest = len(max(cell, key=len)) + 2 * padding[1]
-                
+
                 elif padding[1] <= 0 and len(max(cell, key=len)) > longest:
                     longest = len(max(cell, key=len))
 
             #Assign longest (including padding) to array
             col_sizes.append(longest)
-    
+
     #Calculate the physical dimensions of the grid
     grid_height = num_horiz_gridlines + sum(row_sizes)
     grid_width  = num_vert_gridlines  + sum(col_sizes)
@@ -288,7 +288,7 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
     out = []
     for row in range(grid_height):
         out.append([' ']*grid_width)
-    
+
     #Draw horizontal lines if necessary
     index = 0
     row_sizes_copy = row_sizes.copy()
@@ -298,7 +298,7 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
             if index == 0 and border[0] != "None":
                 index = 1
                 continue
-            
+
             #Jump to the index of the horizontal lines we we need to draw
             index += row_sizes_copy.pop(0)
 
@@ -307,9 +307,9 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
                 out[index] = [border_styles.get(border[1])[1]]*grid_width
             else:
                 break
-            
+
             index += 1 #Skip to the next row
-    
+
     #Draw vertical lines if necessary
     index = 0
     col_sizes_copy = col_sizes.copy()
@@ -319,7 +319,7 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
             if index == 0 and border[0] != "None":
                 index = 1
                 continue
-            
+
             #Jump to the index of the vertical lines we we need to draw
             index += col_sizes_copy.pop(0)
 
@@ -331,15 +331,15 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
 
                 break
             index += 1 #Jump to the next column
-    
+
     #Draw outer border if necessary
     if border[0] != "None":
         #Top border + Corners
         out[0]              = [border_styles.get(border[0])[2]] + [border_styles.get(border[0])[1]]*(grid_width - 2) + [border_styles.get(border[0])[2]]
-        
+
         #Bottom Border + Corners
         out[grid_height -1] = [border_styles.get(border[0])[2]] + [border_styles.get(border[0])[1]]*(grid_width - 2) + [border_styles.get(border[0])[2]]
-        
+
         for row in range(1, grid_height - 1):
             #Left Border
             out[row][0]              = border_styles.get(border[0])[0]
@@ -361,13 +361,13 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
         max_width  = col_sizes[cell %   grid_dims[1]]
 
         #Measure the data
-        cell_height = len(data[cell]) 
+        cell_height = len(data[cell])
         cell_width  = len(max(data[cell], key=len))
 
         #Trim the height of the data to max height minus padding
         if cell_height + (2 * padding[0] if padding[0] > -1 else 0) > max_height:
             data[cell] = data[cell][: max_height - (2 * padding[0] if padding[0] > -1 else 0)]
-        
+
         #Trim the width of the data to the max width minus padding
         if cell_width  + (2 * padding[1] if padding[1] > -1 else 0) > max_width:
             for row in range(len(data[cell])):
@@ -384,12 +384,12 @@ def makeGrid(data, grid_dims, out_size = (0,0), padding = (-1, -1), border = ("N
 def getWeather(init = False):
     global weatherArray
     global weatherClock
-    
+
     #Initialize the clock if necessary, this will also populate the weather array
     if init:
         weatherClock = time.monotonic()
         weatherArray = []
-    
+
     #Swaps the hourly and daily forecasts on a preset interval
     swap_interval    = 15 #seconds
     def showOutput(blocks, start, swap_frequency):
@@ -397,7 +397,7 @@ def getWeather(init = False):
             return makeGrid([blocks[0], blocks[1]], (2, 1), padding =(0, -1), border=("thick", "thick", "thick"))
         else:
             return makeGrid([blocks[0], blocks[2]], (2, 1), padding =(0, -1), border=("thick", "thick", "thick"))
-    
+
     #Only refreshes the weather data on a preset interval to improve performance
     refresh_interval = 900 #seconds
     if not init and (time.monotonic() < weatherClock + refresh_interval):
@@ -428,17 +428,17 @@ def getWeather(init = False):
     lat = weather_latitude
     lon = weather_longitude
     api_key = weather_api_key
-    
+
     complete_url = base_url + "lat=" + lat + "&lon=" + lon + "&units=imperial" + "&appid=" + api_key
 
     #Call the API (Avoiding network errors)
     try:
-        response = requests.get(complete_url) 
+        response = requests.get(complete_url)
     except:
         return showOutput(weatherArray, weatherClock, swap_interval)
-    
+
     x = response.json()
-    
+
     #Create the current conditions array
     current_conditions = []
     current = x["current"]
@@ -454,16 +454,16 @@ def getWeather(init = False):
             current_symbol = getShape("WeatherSun")
         else:
             current_symbol = getShape("WeatherMoon")
-    
+
     #Otherwise, show the symbol dictated by the dictionary
     else:
         current_symbol = getShape( weather_reference.get(current["weather"][0]["main"]) )
-    
-    #Begin constructing the current info panel 
+
+    #Begin constructing the current info panel
     current_info = []
 
     #Display the current temperature
-    current_info.append(["Temperature: "]) 
+    current_info.append(["Temperature: "])
     current_info.append([str(round(current["temp"])) + " F"])
 
     #Display the "feels like" temperature
@@ -473,7 +473,7 @@ def getWeather(init = False):
     #Display the humidity
     current_info.append(["Humidity: "])
     current_info.append([str(current["humidity"]) + "%"])
-    
+
     #Change the wind direction in degrees into to cardinal directions and display the wind info
     dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
     temp = round(current["wind_deg"] / (360. / len(dirs)))
@@ -488,7 +488,7 @@ def getWeather(init = False):
 
     #Add the description to the panel as a "header"
     temp_arr = makeGrid([description, temp_arr], (2, 1), padding=(0, 1), border=("None", "line", "None"))
-    
+
     #Add the symbol on the left side of the grid we just made
     current_conditions = makeGrid([current_symbol, temp_arr], (1, 2), out_size = (15, 0), padding = (-1, 3), border=("None", "None", "line"))
 
@@ -522,13 +522,13 @@ def getWeather(init = False):
 
     #Make the grid for the hourly conditions
     hourly_conditions = makeGrid(hourly_conditions, (2, 6), padding=(1, 1), border=("None", "dots", "dots"))
-    
+
     #Begin constructing the 5-day forecast
     daily_conditions = []
     weekdays = ["Monday:", "Tuesday:", "Wednesday:", "Thursday:", "Friday:", "Saturday:", "Sunday:"]
     cell_width = 10 #Kinda hacky, should debug the grid system
     tomorrow = True
-    
+
     for day in x["daily"][1:6]:
         temp_arr = []
 
@@ -561,7 +561,7 @@ def getWeather(init = False):
 
     #Update the global variable
     weatherArray = [current_conditions, hourly_conditions, daily_conditions]
-    
+
     #Return an array if init is false
     if not init:
         return showOutput(weatherArray, weatherClock, swap_interval)
@@ -586,7 +586,7 @@ def getNews(init = False):
                 temp = text[:length].rpartition(" ")
                 out.append(temp[0])
                 text = temp[2] + text[length:] #Add any remaining characters back to the main string
-            
+
             #Otherwise, simply add everything before the space to the out array
             #And leave everything after the space as is
             else:
@@ -605,7 +605,7 @@ def getNews(init = False):
         newsRawArray     = []
         newsMainFeed     = []
         numCalls = 0
-        
+
     #Build URL
     base_url = 'http://newsapi.org/v2/top-headlines?country=us&apiKey='
     api_key  = news_api_key
@@ -617,17 +617,17 @@ def getNews(init = False):
 
         #If the refresh cooldown is over, refresh the feed
         if init or time.monotonic() > newsRefreshClock + refresh_interval:
-            
+
             newsRefreshClock = time.monotonic() #Reset the clock
-            
+
             #Try to call the API (throws error w/o internet connection)
             try:
                 numCalls += 1
                 newsMainFeed = requests.get(url).json()["articles"]
             except:
                 pass
-        
-        #Pass the new feed (Or possibly the old feed if the internet is out 
+
+        #Pass the new feed (Or possibly the old feed if the internet is out
         #or the cooldown period has not passed) to the raw news feed
         newsRawArray = newsMainFeed.copy() + newsRawArray
 
@@ -663,7 +663,7 @@ def getNews(init = False):
 
     #Make the main grid
     newsDisplayArray = makeGrid(newsDisplayArray, (out_length, 1), padding=(0,1), border=("None", "dots", "None"))
-    
+
     #Trim and frame the grid
     newsDisplayArray = makeGrid([newsDisplayArray], (1, 1), (out_array_dims[0], 0), border=("thick", "None", "None"))
     return newsDisplayArray
@@ -671,13 +671,13 @@ def getNews(init = False):
 
 #Creates the base layer with cutout for widgets and random noise as well
 def getBackground(current = []):
-    
+
     symbols = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','"','#','$','%','&','\'','(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\\',']','`','^','_','{','|','}','~']
     if len(current) == 0:
         noise = []
         for row in range(ROWS):
             noise.append( random.choices(symbols, k=COLUMNS) )
-        
+
         return noise
 
     else:
@@ -689,7 +689,7 @@ def getBackground(current = []):
             for col in range(COLUMNS):
                 if bool_arr[col]:
                     current[row][col] = char_arr[col]
-        
+
         return current
 
 
@@ -698,12 +698,12 @@ def getBackground(current = []):
 file = open("/home/pi/Smart-Display/secrets.json")
 if file.readable:
     contents = json.load(file)
-    
+
     weather_latitude = contents["weather_latitude"]
     weather_longitude = contents["weather_longitude"]
     weather_api_key = contents["weather_api_key"]
     news_api_key = contents["news_api_key"]
-    
+
     file.close()
 else:
     raise Exception("Failed to Load Secrets File")
@@ -763,7 +763,7 @@ while time.localtime().tm_hour < end:
 
     # Draw Screen
     showScreen(new_screen)
-    
+
     #Wait
     time.sleep(clock_interval)
 
