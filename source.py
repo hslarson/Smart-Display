@@ -61,6 +61,7 @@ def showScreen(screen):
         file.close()
     
     # Show File
+    os.system("clear")
     os.system("cat screen.txt")
 
 
