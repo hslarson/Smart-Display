@@ -48,16 +48,9 @@ def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False)
 #Prints the values of a char array as one string
 def showScreen(screen):
 
-    #Make one long string of all of the characters
-    out = ""
     rows = len(screen)
-    
     for row in range(rows):
-        out += "".join(screen[row])
-    
-    # Print to screen
-    #os.system("echo \"" + out + "\"")
-    print(out)
+        print("".join(screen[row]))
 
 
 #Searches shape.txt for a given shape
@@ -704,8 +697,8 @@ else:
 
 
 #Array size constants
-ROWS = 86
-COLUMNS = 98
+ROWS = 95
+COLUMNS = 108
 
 #Size Constants
 time_height    = 25
@@ -727,6 +720,8 @@ startup = True
 numCalls = 0
 while time.localtime().tm_hour < end:
     if startup:
+        startup = False
+
         #Initialize Modules
         getTime(init = True)
         getWeather(init = True)
@@ -738,6 +733,7 @@ while time.localtime().tm_hour < end:
         time_arr       = ['']
         weather_arr    = []
         news_arr       = []
+
 
     #Generate all of the widgets
     background_arr = getBackground(background_arr)
