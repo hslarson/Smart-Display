@@ -389,7 +389,7 @@ def getWeather(init = False):
         weatherArray = []
     
     #Swaps the hourly and daily forecasts on a preset interval
-    swap_interval    = 10 #seconds
+    swap_interval    = 15 #seconds
     def showOutput(blocks, start, swap_frequency):
         if (time.monotonic() - start) // swap_frequency % 2 == 0:
             return makeGrid([blocks[0], blocks[1]], (2, 1), padding =(0, -1), border=("thick", "thick", "thick"))
@@ -630,7 +630,7 @@ def getNews(init = False):
         newsRawArray = newsMainFeed.copy() + newsRawArray
 
     #Every x seconds, re-render the raw array
-    rotation_speed = 8 #seconds
+    rotation_speed = 15 #seconds
     if not init and time.monotonic() < newsClock + rotation_speed:
         return newsDisplayArray
     else:
@@ -723,7 +723,7 @@ weather_y_spacing = 2 * y_spacing + time_height
 news_y_spacing    = 3 * y_spacing + (time_height + weather_height)
 
 #Time Constants
-clock_interval = 10
+clock_interval = 15
 end = 23 #11:00pm
 
 #Main loop
