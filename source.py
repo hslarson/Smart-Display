@@ -556,7 +556,7 @@ def getWeather(init = False):
         daily_conditions.append( temp_arr )
 
     #Construct the 5-day forecast
-    daily_conditions = makeGrid(daily_conditions, (1, 5), padding=(2, 1), border=("None", "None", "line"))
+    daily_conditions = makeGrid(daily_conditions, (1, 5), padding=(3, 1), border=("None", "None", "line"))
 
     #Update the global variable
     weatherArray = [current_conditions, hourly_conditions, daily_conditions]
@@ -714,7 +714,7 @@ COLUMNS = 108
 
 #Size Constants
 time_height    = 25
-weather_height = 32
+weather_height = 33
 news_height    = 30
 
 y_spacing = (ROWS - (time_height + weather_height + news_height)) // 4
