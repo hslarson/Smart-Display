@@ -48,9 +48,20 @@ def layer(bottom, top, t_coords = (0,0), respect_spaces = False, center = False)
 #Prints the values of a char array as one string
 def showScreen(screen):
 
+    # Make screen into long string
     rows = len(screen)
+    out  = ""
     for row in range(rows):
-        print("".join(screen[row]))
+        out += "".join(screen[row])
+
+    # Write screen string to file
+    with open("screen.txt", 'w') as file:
+        if file.writable():
+            file.write(out)
+        file.close()
+    
+    # Show File
+    os.system("cat screen.txt")
 
 
 #Searches shape.txt for a given shape
