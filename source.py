@@ -54,15 +54,9 @@ def showScreen(screen):
     for row in range(rows):
         out += "".join(screen[row])
 
-    # Write screen string to file
-    with open("screen.txt", 'w') as file:
-        if file.writable():
-            file.write(out)
-        file.close()
-
-    # Show File
+    # Show Screen
     os.system("clear")
-    os.system("cat screen.txt")
+    print(out)
 
 
 #Searches shape.txt for a given shape
@@ -611,7 +605,7 @@ def getNews(init = False):
     api_key  = news_api_key
     url  = base_url + api_key
 
-    refresh_interval = 600 #Call the API (at most) every x seconds
+    refresh_interval = (24*3600)/100 #Call the API (at most) every x seconds
     out_length = 8         #How many stories to render at once
     if init or len(newsRawArray) <= out_length:
 
@@ -726,12 +720,12 @@ news_y_spacing    = 3 * y_spacing + (time_height + weather_height)
 
 #Time Constants
 clock_interval = 15
-end = 23 #11:00pm
 
 #Main loop
 startup = True
-numCalls = 0
-while time.localtime().tm_hour < end:
+while True:
+    
+    start = time.time()
     if startup:
         startup = False
 
@@ -747,7 +741,6 @@ while time.localtime().tm_hour < end:
         weather_arr    = []
         news_arr       = []
 
-
     #Generate all of the widgets
     background_arr = getBackground(background_arr)
     time_arr       = getTime()
@@ -760,12 +753,11 @@ while time.localtime().tm_hour < end:
     new_screen = layer(new_screen, time_arr,    (time_y_spacing,  0),   respect_spaces = True, center = True)
     new_screen = layer(new_screen, weather_arr, (weather_y_spacing, 0), respect_spaces = True, center = True)
     new_screen = layer(new_screen, news_arr,    (news_y_spacing, 0),    respect_spaces = True, center = True)
+    
+    # Wait for Remainder of Clock Period
+    wait = clock_interval - (time.time()-start)
+    if wait > 0:
+        time.sleep(wait)
 
     # Draw Screen
     showScreen(new_screen)
-
-    #Wait
-    time.sleep(clock_interval)
-
-
-print( "NUMBER OF NEWS API CALLS: " + str(numCalls))
