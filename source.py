@@ -56,7 +56,7 @@ def showScreen(screen):
 
     # Show Screen
     os.system("clear")
-    print(out)
+    print(out[:-1], end="")
 
 
 #Searches shape.txt for a given shape
